@@ -1,29 +1,13 @@
-#include <nfd.h>
 #include "MediaPlayer.h"
+#include "GtkFileDialog.h"
 #include <iostream>
-
-std::string openFileDialog() {
-    nfdchar_t *outPath = nullptr;
-    nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &outPath);
-    
-    if (result == NFD_OKAY) {
-        std::string file_path(outPath);
-        free(outPath);
-        return file_path;
-    } else if (result == NFD_CANCEL) {
-        std::cerr << "User pressed cancel." << std::endl;
-    } else {
-        std::cerr << "Error: " << NFD_GetError() << std::endl;
-    }
-
-    return "";
-}
 
 int main(int argc, char* argv[]) {
     std::string media_file;
 
-    // Allow user to choose a media file using a file dialog
-    media_file = openFileDialog();
+    // Create an instance of GtkFileDialog and allow the user to choose a media file
+    GtkFileDialog fileDialog;
+    media_file = fileDialog.openFileDialog();
 
     // Check if the user selected a valid file
     if (media_file.empty()) {
