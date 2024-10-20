@@ -11,7 +11,7 @@ MediaPlayer::~MediaPlayer() {
     cleanup();
 }
 
-bool MediaPlayer::initialize() {  // Change from void to bool
+bool MediaPlayer::initialize() {
     if (!decoder->initialize()) {
         std::cerr << "Failed to initialize the decoder." << std::endl;
         return false;
@@ -29,7 +29,7 @@ void MediaPlayer::play() {
     AVFrame* frame = av_frame_alloc();
 
     // Handle audio-only files
-    if (decoder->audio_stream_index != -1) {
+    if (decoder->audio_stream_index != -1 && decoder->video_stream_index == -1) {
         std::cout << "Playing audio-only file." << std::endl;
 
         // Initialize SDL for audio playback
@@ -38,7 +38,7 @@ void MediaPlayer::play() {
             return;
         }
 
-        AVCodecContext* audioCodecCtx = decoder->getAudioCodecCtx();  // Use getter
+        AVCodecContext* audioCodecCtx = decoder->getAudioCodecCtx();
 
         // Set the audio format using SDL
         SDL_AudioSpec spec;
@@ -61,11 +61,12 @@ void MediaPlayer::play() {
         av_init_packet(&packet);
 
         // Read and decode audio frames
-        while (av_read_frame(decoder->getFormatCtx(), &packet) >= 0) {  // Use getter
+        bool audio_finished = false;
+        while (av_read_frame(decoder->getFormatCtx(), &packet) >= 0) {
             if (packet.stream_index == decoder->audio_stream_index) {
                 if (avcodec_send_packet(audioCodecCtx, &packet) >= 0) {
                     while (avcodec_receive_frame(audioCodecCtx, frame) == 0) {
-                        // Play the audio frame data
+                        // Queue the audio frame data for playback
                         SDL_QueueAudio(1, frame->data[0], frame->linesize[0]);
                     }
                 }
@@ -74,14 +75,16 @@ void MediaPlayer::play() {
         }
 
         // Wait for audio to finish playing
-        SDL_Delay(5000);  // Adjust delay based on track length
+        while (SDL_GetQueuedAudioSize(1) > 0) {
+            SDL_Delay(100);
+        }
 
         // Cleanup SDL resources
         SDL_CloseAudio();
         SDL_Quit();
 
     } else if (decoder->video_stream_index != -1) {
-        // Video playback logic (if applicable)
+        // Video playback logic
         std::cout << "Playing video file." << std::endl;
         while ((frame = decoder->decodeVideoFrame())) {
             videoRenderer->renderFrame(frame);
