@@ -1,6 +1,6 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++11
-LDFLAGS = -lavformat -lavcodec -lavutil -lswscale -lavfilter -lswresample -lSDL2 `pkg-config --cflags --libs gtk+-3.0`
+CXXFLAGS = -Wall -std=c++11 `pkg-config --cflags sdl2 gtk+-3.0 libavutil`
+LDFLAGS = `pkg-config --libs sdl2 gtk+-3.0 libavformat libavcodec libavutil libswscale libswresample`
 
 SRC_DIR = src
 INCLUDE_DIR = include

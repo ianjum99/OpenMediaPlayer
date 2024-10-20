@@ -16,6 +16,9 @@ public:
     void handleEvents();
     void cleanup();
 
+public:
+    void toggleFullscreen();  // Add this method to MediaPlayer
+
 private:
     std::string file_path;
     bool is_running;

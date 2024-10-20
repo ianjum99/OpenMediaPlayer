@@ -72,3 +72,9 @@ void MediaPlayer::cleanup() {
         delete eventHandler;
     }
 }
+
+void MediaPlayer::toggleFullscreen() {
+    if (videoRenderer) {
+        videoRenderer->toggleFullscreen();  // Delegate to VideoRenderer
+    }
+}

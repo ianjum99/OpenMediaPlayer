@@ -4,7 +4,7 @@
 Decoder::Decoder(const std::string& file_path) 
     : pFormatCtx(nullptr), videoCodecCtx(nullptr), audioCodecCtx(nullptr),
       swsCtx(nullptr), video_stream_index(-1), audio_stream_index(-1) {
-    av_register_all();
+    // av_register_all();  // No longer needed in newer versions of FFmpeg
     if (avformat_open_input(&pFormatCtx, file_path.c_str(), nullptr, nullptr) != 0) {
         std::cerr << "Could not open file: " << file_path << std::endl;
     }
@@ -22,7 +22,7 @@ bool Decoder::initialize() {
 
     for (unsigned int i = 0; i < pFormatCtx->nb_streams; ++i) {
         AVCodecParameters* codecParams = pFormatCtx->streams[i]->codecpar;
-        AVCodec* codec = avcodec_find_decoder(codecParams->codec_id);
+        const AVCodec* codec = avcodec_find_decoder(codecParams->codec_id);  // Use const AVCodec*
         if (codecParams->codec_type == AVMEDIA_TYPE_VIDEO && video_stream_index < 0) {
             video_stream_index = i;
             videoCodecCtx = avcodec_alloc_context3(codec);
