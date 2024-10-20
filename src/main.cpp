@@ -1,22 +1,22 @@
 #include "MediaPlayer.h"
-#include "GtkFileDialog.h"
 #include <iostream>
+extern "C" {
+    #include <libavutil/log.h>
+}
 
 int main(int argc, char* argv[]) {
-    std::string media_file;
+    av_log_set_level(AV_LOG_DEBUG);
 
-    // Create an instance of GtkFileDialog and allow the user to choose a media file
-    GtkFileDialog fileDialog;
-    media_file = fileDialog.openFileDialog();
-
-    // Check if the user selected a valid file
-    if (media_file.empty()) {
-        std::cerr << "No file selected." << std::endl;
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " <media file path>" << std::endl;
         return -1;
     }
 
-    MediaPlayer player(media_file);
+    MediaPlayer player(argv[1]);
+
+    // Call initialize without checking the return value (if it's still void)
     player.initialize();
+
     player.play();
     player.cleanup();
 

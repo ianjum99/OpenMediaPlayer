@@ -3,9 +3,9 @@
 
 #include <string>
 extern "C" {
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
+    #include <libavformat/avformat.h>
+    #include <libavcodec/avcodec.h>
+    #include <libswscale/swscale.h>
 }
 
 class Decoder {
@@ -15,18 +15,28 @@ public:
 
     bool initialize();
     AVFrame* decodeVideoFrame();
-    void seek(int64_t timestamp);
-    int getWidth() const;
-    int getHeight() const;
     void cleanup();
+    
+    void seek(int64_t timestamp);
+
+    int getWidth() const { return videoCodecCtx->width; }
+    int getHeight() const { return videoCodecCtx->height; }
+
+    // Add these getter methods to access private members
+    AVCodecContext* getAudioCodecCtx() { return audioCodecCtx; }
+    AVFormatContext* getFormatCtx() { return pFormatCtx; }
+
+    int video_stream_index;
+    int audio_stream_index;
 
 private:
     AVFormatContext* pFormatCtx;
     AVCodecContext* videoCodecCtx;
     AVCodecContext* audioCodecCtx;
     SwsContext* swsCtx;
-    int video_stream_index;
-    int audio_stream_index;
+    
+    AVFrame* frame;
+    AVPacket* packet;
 };
 
 #endif // DECODER_H
