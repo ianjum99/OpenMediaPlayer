@@ -2,6 +2,9 @@
 #define VIDEO_RENDERER_H
 
 #include <SDL.h>
+extern "C" {
+    #include <libavcodec/avcodec.h>  // For AVFrame
+}
 
 class VideoRenderer {
 public:
@@ -9,7 +12,7 @@ public:
     ~VideoRenderer();
 
     void initialize(int width, int height);
-    void renderFrame(AVFrame* frame);
+    void renderFrame(AVFrame* frame);  // AVFrame should be recognized now
     void toggleFullscreen();
     void cleanup();
 

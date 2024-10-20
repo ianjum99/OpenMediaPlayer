@@ -4,7 +4,7 @@
 
 // Ensure we are including the right FFmpeg headers
 extern "C" {
-    #include <libavutil/time.h>  // For AV_TIME_BASE
+    #include <libavutil/avutil.h>  // For AV_TIME_BASE
 }
 
 EventHandler::EventHandler() : is_paused(false) {}
